@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube</title>
+    <style>
+        #showVideos{
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 20px;
+            margin: auto;
+
+        }
+        div>img{
+            height: 80px;
+            width: 120px;
+        }
+        #top{
+            display: flex;
+            justify-content: space-around;
+        }
+        input{
+            height: 30px;
+            width: 500px;
+        }
+        /* #top>div{
+            display: flex;
+        }
+        button{
+
+        } */
+        /* #showVideos>div{ */
+            /* height: 200px;
+            width: 300px; */
+            /* border: 1px solid red; */
+        /* } */
+    </style>
+</head>
+
+<body>
+    <div id="top">
+        <div>
+        <img src="https://cdn.mos.cms.futurecdn.net/8gzcr6RpGStvZFA2qRt4v6-970-80.jpg.webp" alt="">
+
+        </div>
+        <div>
+            <input type="text" id="query" placeholder="Search">
+    <button onclick="searchVideos()">Search</button>
+        </div>
+    </div>
+    
+    <div id="showVideos"></div>
+</body>
+
+</html>
+<script>
+    // https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=pushpa&key=[YOUR_API_KEY] 
+    const API = "AIzaSyAjnC19r8L--9uOiFYYgr9OWuR9uuEWl2o";
+
+    fetch(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&regionCode=IN&maxResults=20&key=${API}`)
+    .then(function(res){
+        return res.json();
+    })
+    .then(function(res){
+        append(res.items);
+    })
+    .catch(function(err){
+        console.log(err);
+    })
+
+    const searchVideos = async () => {
+        try {
+            const q = document.querySelector("#query").value;
+
+            const res = await fetch(` https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${q}&key=${API}`);
+
+            const data = await res.json();
+
+            console.log(data.items);
+            append(data.items)
+        }
+        catch (err) {
+            console.log(err);
+        }
+    };
+
+    const append = (videos) => {
+        let showVideos = document.querySelector("#showVideos")
+        showVideos.innerHTML=null
+
+        videos.forEach((ele) => {
+            let div = document.createElement("div")
+
+            let title =document.createElement("iframe");
+            title.src=`https://www.youtube.com/embed/${ele.id.videoId}`;
+            title.style.width="560";
+            title.style.height="315";
+
+            let h3 =document.createElement("h3")
+            h3.textContent=ele.snippet.title;
+            div.append(title,h3);
+            showVideos.append(div)
+
+            div.addEventListener("click",function(){
+                searchY(ele);
+            })
+        })
+    }
+    let data =JSON.parse(localStorage.getItem("youtube")) || [];
+    let searchY = (ele) =>{
+        data.push(ele);
+        localStorage.setItem("youtube",JSON.stringify(data));
+        window.location.href="Vplay.html"
+    }
+
+</script>
+
+<!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/8-gxHIOSZNA" title="YouTube video player"
+    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen></iframe> -->
