@@ -1,2 +1,2 @@
 # youtubeClone
-Using html, css, api and fetch.
+Using html, css,java script, api and fetch.
